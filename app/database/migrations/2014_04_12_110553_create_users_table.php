@@ -16,6 +16,7 @@ class CreateUsersTable extends Migration {
 		{
 		    $table->increments('id');
 		    $table->string('email')->unique();
+		    $table->string('nickname');
 		    $table->string('password');
 		    $table->boolean('is_locked');
 		    $table->string('open_id');

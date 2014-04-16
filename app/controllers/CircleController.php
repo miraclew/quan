@@ -3,7 +3,7 @@ class CircleController extends BaseController {
     public function index()
     {
         $limit = intval(Input::get('limit', 20));
-        $skip = intval(Input::get('skip', 2));
+        $skip = intval(Input::get('skip', 0));
         $circles = DB::table('circles')->skip($skip)->take($limit)->get();
 
         return Response::json(array('objects' => $circles));

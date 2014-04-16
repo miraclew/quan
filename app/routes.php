@@ -18,6 +18,8 @@ Route::get('/', function()
 
 Route::controller('debug', 'DebugController');
 Route::controller('users', 'UserController');
+Route::controller('files', 'FileController');
+
 Route::resource('circles', 'CircleController');
 Route::resource('follows', 'FollowController');
 Route::resource('members', 'MemberController');

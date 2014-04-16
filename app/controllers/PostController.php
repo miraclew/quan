@@ -3,8 +3,11 @@ class PostController extends BaseController {
     public function index()
     {
         $limit = intval(Input::get('limit', 20));
-        $skip = intval(Input::get('skip', 2));
-        $posts = DB::table('posts')->skip($skip)->take($limit)->get();
+        $skip = intval(Input::get('skip', 0));
+        $posts = DB::table('posts')
+            ->leftJoin('users', 'posts.user_id','=','users.id')
+            ->select('posts.*', 'users.nickname','users.avatar')
+            ->skip($skip)->take($limit)->get();
         return Response::json(array('objects' => $posts));
     }
 
