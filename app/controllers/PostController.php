@@ -7,6 +7,7 @@ class PostController extends BaseController {
         $posts = DB::table('posts')
             ->leftJoin('users', 'posts.user_id','=','users.id')
             ->select('posts.*', 'users.nickname','users.avatar')
+            ->orderBy('id', 'desc')
             ->skip($skip)->take($limit)->get();
         return Response::json(array('objects' => $posts));
     }

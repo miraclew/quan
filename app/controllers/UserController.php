@@ -41,7 +41,11 @@ class UserController extends BaseController {
         $user->is_locked = false;
         $user->save();
 
-        return Response::json(array('id'=>$user->id));
+        // login
+        Auth::logout();
+        Auth::loginUsingId($user->id);
+
+        return Response::json(array('user'=> array('id'=>$user->id, 'email'=> $user->email)));
     }
 
     public function getProfile()

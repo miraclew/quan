@@ -13,10 +13,10 @@
 
 App::before(function($request)
 {
-    $should_auth = !in_array($request->segment(2), array('login', 'register'));
-	if (Auth::guest() && $should_auth) {
-		return Response::json(array('error'=>array('code'=>-1,'message'=>'forbidden')));
-	}
+ //    $should_auth = !in_array($request->segment(2), array('login', 'register'));
+	// if (Auth::guest() && $should_auth) {
+	// 	return Response::json(array('error'=>array('code'=>-1,'message'=>'forbidden')));
+	// }
 });
 
 
