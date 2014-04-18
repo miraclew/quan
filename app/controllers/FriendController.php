@@ -16,7 +16,19 @@ class FriendController extends BaseController {
                 })
             ->skip($skip)->take($limit)->get();
 
-        return Response::json(array('objects' => $friends));
+        $objects = array();
+        foreach ($friends as $value) {
+            $friend_id = Auth::user()->id == $value->user_id ? $value->friend_id : $value->user_id;
+            $user = User::find($friend_id);
+            $objects[] = array(
+                'id' => $value->id,
+                'friend_id' => $friend_id,
+                'avatar' => $user->avatar,
+                'nickname' => $user->nickname
+                );
+        }
+
+        return Response::json(array('objects' => $objects));
     }
 
     public function store()
@@ -50,5 +62,20 @@ class FriendController extends BaseController {
         $friend->save();
 
         return Response::json(array('object'=>$friend->toArray()));
+    }
+
+    public function destroy($id) {
+        $friend = Friend::find($id);
+        if (!$friend) {
+            return Response::json(array('error'=>array('message'=>'data not found')));
+        }
+
+        if (Auth::user()->id != $friend->friend_id && Auth::user()->id != $friend->user_id) {
+            return Response::json(array('error'=>array('message'=>'denied')));
+        }
+
+        $friend->delete();
+
+        return Response::json(array('message'=>"OK"));
     }
 }

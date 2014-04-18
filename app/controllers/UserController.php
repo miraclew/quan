@@ -50,7 +50,25 @@ class UserController extends BaseController {
 
     public function getProfile()
     {
-        return Response::json(array('name' => 'Steve', 'state' => 'CA'));
+        $user = Auth::user();
+        return Response::json(array('object' => $user->toArray()));
+    }
+
+    public function show($id) {
+        $me = Auth::user();
+        $user = User::find($id);
+        if ($user) {
+            $object = $user->toArray();
+            $object['friend_id'] = 0;
+
+            $friend = Friend::whereRaw('(user_id=? and friend_id=?) or (user_id=? and friend_id=?)', array($me->id, $user->id,$user->id,$me->id))->first();
+            if ($friend && $friend->status == Friend::STATUS_CONFIRM) {
+                $object['friend_id'] = $friend->id;
+            }
+            return Response::json(array('object' => $object));
+        }
+
+        return Response::json(array('object' => null));
     }
 
 }

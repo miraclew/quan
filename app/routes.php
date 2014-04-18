@@ -16,14 +16,15 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
-Route::controller('debug', 'DebugController');
-Route::controller('users', 'UserController');
-Route::controller('files', 'FileController');
-Route::controller('messages', 'MessageController');
-
+Route::resource('users', 'UserController', array('only' => array('show')));
 Route::resource('circles', 'CircleController');
 Route::resource('friends', 'FriendController');
 Route::resource('follows', 'FollowController');
 Route::resource('members', 'MemberController');
 Route::resource('posts', 'PostController');
 Route::resource('comments', 'CommentController');
+
+Route::controller('debug', 'DebugController');
+Route::controller('users', 'UserController');
+Route::controller('files', 'FileController');
+Route::controller('messages', 'MessageController');
