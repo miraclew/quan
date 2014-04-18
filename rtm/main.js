@@ -1,20 +1,34 @@
 #!/usr/bin/env node
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+var bodyParser = require('body-parser');
+var express = require('express');
 
-var server = http.createServer(function(request, response) {
-    console.log((new Date()) + ' Received request for ' + request.url);
-    response.writeHead(404);
-    response.end();
+var app = express();
+app.use(bodyParser());
+
+app.get('/', function(req, res) {
+    //res.render('index', { layout: false });
+    res.send('hello');
 });
-server.listen(8080, function() {
-    console.log((new Date()) + ' Server is listening on port 8080');
+
+app.post('/message', function(req, res) {
+    console.log(req.body.abc);
+    if (req.body.abc) {
+        res.send('sucess');
+    } else {
+        res.send('error');
+    }
 });
+
+app.listen(8080);
 
 wsServer = new WebSocketServer({
-    httpServer: server,
+    httpServer: app,
     autoAcceptConnections: false
 });
+
+var connections = [];
 
 function originIsAllowed(origin) {
     console.log('origin:' + origin); // e.g. http://www.baidu.com
@@ -44,7 +58,8 @@ wsServer.on('request', function(request) {
     }
 
     var connection = request.accept('mp-protocol-v1', request.origin);
-    console.log((new Date()) + ' Connection accepted.');
+    connections.push(connection);
+    console.log(connection.remoteAddress + " connected - Protocol Version " + connection.webSocketVersion);
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
             console.log('Received Message: ' + message.utf8Data);
@@ -52,6 +67,11 @@ wsServer.on('request', function(request) {
         }
     });
     connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        console.log(connection.remoteAddress + " disconnected");
+        var index = connections.indexOf(connection);
+        if (index !== -1) {
+            // remove the connection from the pool
+            connections.splice(index, 1);
+        }
     });
 });
