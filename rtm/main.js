@@ -21,10 +21,24 @@ app.get('/', function(req, res) {
 app.post('/messages', function(req, res) {
     console.log('post /messages: ');
     console.log(req.body);
-    for(var k in connections) {
-        var connection = connections[k];
-        connection.sendUTF(JSON.stringify(req.body));
-    }
+    var channel_id = req.body.channel_id;
+
+    rc.smembers('cms:'+channel_id, function(err, reply){
+        if (err == null) {
+            for (var i = 0; i < reply.length; i++) {
+                var k = reply[i];
+                var connection = connections[k];
+                if (connection != null) {
+                    connection.sendUTF(JSON.stringify(req.body));
+                };
+            };
+        };
+    });
+
+    // for(var k in connections) {
+    //     var connection = connections[k];
+    //     connection.sendUTF(JSON.stringify(req.body));
+    // }
 
     res.json({'code':0});
 });

@@ -16,7 +16,7 @@ class Message extends Eloquent {
 
     public function send() {
         $apiUrl = Config::get('app.rtm_api_url');
-        return $this->http_post($apiUrl, $this->toArray(), true);
+        return $this->http_post($apiUrl, $this->toArray());
     }
 
     function http_post($url, $data, $debug = false) {
