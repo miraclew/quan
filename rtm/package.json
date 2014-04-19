@@ -1,7 +1,15 @@
 {
-  "dependencies":
-  {
-    "express":"*",
-    "body-parser":"*"
-  }
+    "name": "rtm",
+    "description": "rtm app",
+    "version": "0.0.1",
+    "private": true,
+
+    "dependencies":
+    {
+        "websocket":"*",
+        "express":"*",
+        "body-parser":"*",
+        "hiredis":"*",
+        "redis":"*"
+    }
 }

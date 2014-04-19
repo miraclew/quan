@@ -24,7 +24,9 @@ Route::resource('members', 'MemberController');
 Route::resource('posts', 'PostController');
 Route::resource('comments', 'CommentController');
 
+Route::resource('channels', 'ChannelController');
+Route::resource('messages', 'MessageController');
+
 Route::controller('debug', 'DebugController');
 Route::controller('users', 'UserController');
 Route::controller('files', 'FileController');
-Route::controller('messages', 'MessageController');

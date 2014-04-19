@@ -3,32 +3,38 @@ var WebSocketServer = require('websocket').server;
 var http = require('http');
 var bodyParser = require('body-parser');
 var express = require('express');
+var redis = require("redis"),
+    rc = redis.createClient();
 
+rc.on("error", function (err) {
+    console.log("Redis Error: " + err);
+});
+
+var connections = {};
 var app = express();
 app.use(bodyParser());
 
 app.get('/', function(req, res) {
-    //res.render('index', { layout: false });
     res.send('hello');
 });
 
-app.post('/message', function(req, res) {
-    console.log(req.body.abc);
-    if (req.body.abc) {
-        res.send('sucess');
-    } else {
-        res.send('error');
+app.post('/messages', function(req, res) {
+    console.log('post /messages: ');
+    console.log(req.body);
+    for(var k in connections) {
+        var connection = connections[k];
+        connection.sendUTF(JSON.stringify(req.body));
     }
+
+    res.json({'code':0});
 });
 
-app.listen(8080);
+var httpServer = app.listen(8080);
 
 wsServer = new WebSocketServer({
-    httpServer: app,
+    httpServer: httpServer,
     autoAcceptConnections: false
 });
-
-var connections = [];
 
 function originIsAllowed(origin) {
     console.log('origin:' + origin); // e.g. http://www.baidu.com
@@ -36,20 +42,8 @@ function originIsAllowed(origin) {
     return true;
 }
 
-function authToken(token) {
-    return true;
-}
-
 wsServer.on('request', function(request) {
-    var token = request.resourceURL.query.token;
-    console.log('token:'+token);
-
-    if (!authToken(token)) {
-        request.reject();
-        console.log((new Date()) + ' Connection with token ' + token + ' rejected.');
-        return;
-    };
-
+    console.log('request....');
     if (!originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
       request.reject();
@@ -57,21 +51,31 @@ wsServer.on('request', function(request) {
       return;
     }
 
-    var connection = request.accept('mp-protocol-v1', request.origin);
-    connections.push(connection);
-    console.log(connection.remoteAddress + " connected - Protocol Version " + connection.webSocketVersion);
-    connection.on('message', function(message) {
-        if (message.type === 'utf8') {
-            console.log('Received Message: ' + message.utf8Data);
-            connection.sendUTF(message.utf8Data);
-        }
-    });
-    connection.on('close', function(reasonCode, description) {
-        console.log(connection.remoteAddress + " disconnected");
-        var index = connections.indexOf(connection);
-        if (index !== -1) {
-            // remove the connection from the pool
-            connections.splice(index, 1);
-        }
+    var token = request.resourceURL.query.token;
+    console.log('token:'+token);
+
+    rc.get("token:"+token, function(err, reply) {
+        console.log(err);
+        if (reply == null) {
+            request.reject();
+            console.log((new Date()) + ' Connection with token ' + token + ' rejected.');
+            return;
+        } else {
+            var connection = request.accept('mp-v1', request.origin);
+            var userId = reply;
+            connection.userId = userId;
+            connections[userId] = connection;
+            console.log(connection.remoteAddress + " connected - Protocol Version " + connection.webSocketVersion);
+            connection.on('message', function(message) {
+                if (message.type === 'utf8') {
+                    console.log('Received Message: ' + message.utf8Data);
+                    connection.sendUTF(message.utf8Data);
+                }
+            });
+            connection.on('close', function(reasonCode, description) {
+                console.log(connection.remoteAddress + " disconnected");
+                delete connections[userId];
+            });
+        };
     });
 });

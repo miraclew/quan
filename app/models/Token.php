@@ -9,7 +9,24 @@ class Token extends Eloquent {
         }
         $token->refresh($ttl);
         $token->save();
+
         return $token;
+    }
+
+    public static function newTokenForUser($userId, $ttl=2592000) { // 30 days
+        $token = Str::random(20);
+        $redis = LRedis::connection();
+        $key = "token:$token";
+        $redis->set($key, $userId);
+        $redis->expire($key, $ttl);
+
+        return $token;
+    }
+
+    public static function getUserOfToken($token) {
+        $redis = LRedis::connection();
+        $key = "token:$token";
+        return $redis->get($key);
     }
 
     public function refresh($ttl) {

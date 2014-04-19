@@ -27,6 +27,7 @@ return array(
 	*/
 
 	'url' => 'http://localhost',
+	'rtm_api_url' => 'http://localhost:8080/messages',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -160,7 +161,7 @@ return array(
 		'Password'        => 'Illuminate\Support\Facades\Password',
 		'Queue'           => 'Illuminate\Support\Facades\Queue',
 		'Redirect'        => 'Illuminate\Support\Facades\Redirect',
-		'Redis'           => 'Illuminate\Support\Facades\Redis',
+		'LRedis'           => 'Illuminate\Support\Facades\Redis', // Redis => LRedis
 		'Request'         => 'Illuminate\Support\Facades\Request',
 		'Response'        => 'Illuminate\Support\Facades\Response',
 		'Route'           => 'Illuminate\Support\Facades\Route',

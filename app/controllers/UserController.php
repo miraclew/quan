@@ -8,12 +8,13 @@ class UserController extends BaseController {
         if (Auth::attempt(array('email' => $email, 'password' => $password)))
         {
             $user = Auth::user();
-            $token = Token::authToken($user->id, 600);
+            $ttl = 86400;
+            $token = Token::newTokenForUser($user->id, $ttl);
 
             return Response::json(array(
                 'user'=> array('id'=>$user->id, 'email'=> $user->email),
-                'auth_token' => $token->token,
-                'auth_token_expires_at' => $token->expires_at));
+                'auth_token' => $token,
+                'auth_token_expires_at' => time()+$ttl));
         } else {
             return Response::json(array('error'=>array('code'=>-1, 'message'=>'登录失败, 用户名或密码错误')));
         }
