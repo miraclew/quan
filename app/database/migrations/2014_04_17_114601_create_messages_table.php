@@ -15,16 +15,16 @@ class CreateMessagesTable extends Migration {
 		Schema::create('messages', function($table)
 		{
 		    $table->increments('id');
-		    $table->integer('from_id');
+		    $table->integer('sender_id');
 		    $table->integer('channel_id');
 		    $table->integer('type'); // 消息场景 chat message, user action, system action
 		    $table->integer('sub_type');
 		    $table->string('mime_type');
 		    $table->text('content');
-		    $table->smallInteger('ack_status'); // 应答状态 0: 未应答 1: 应答1, 2: 应答2 ...
+		    $table->smallInteger('ack'); // 应答状态 0: 未应答 1: 应答1, 2: 应答2 ...
 		    $table->smallInteger('status');
 
-		    $table->index('from_id');
+		    $table->index('sender_id');
 		    $table->index('channel_id');
 
 		    $table->timestamps();

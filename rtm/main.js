@@ -27,6 +27,7 @@ app.post('/messages', function(req, res) {
         if (err == null) {
             for (var i = 0; i < reply.length; i++) {
                 var k = reply[i];
+                console.log('send to: '+k);
                 var connection = connections[k];
                 if (connection != null) {
                     connection.sendUTF(JSON.stringify(req.body));

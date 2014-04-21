@@ -15,14 +15,14 @@ class MessageController extends BaseController {
         }
 
         $message = new Message();
-        $message->from_id = Auth::user()->id;
+        $message->sender_id = Auth::user()->id;
         $message->channel_id = $channel_id;
         $message->type = $type;
         $message->sub_type = $sub_type;
         $message->mime_type = $mime_type;
         $message->content = $content;
         $message->status = $status;
-        $message->ack_status = 0;
+        $message->ack = 0;
         $message->save();
 
         // send to rtm

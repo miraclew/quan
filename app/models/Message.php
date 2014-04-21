@@ -16,7 +16,17 @@ class Message extends Eloquent {
 
     public function send() {
         $apiUrl = Config::get('app.rtm_api_url');
-        return $this->http_post($apiUrl, $this->toArray());
+        $data = $this->toArray();
+        $user = User::find($this->sender_id);
+        unset($data['updated_at']);
+        $data['sender_name'] = '';
+        $data['sender_avatar'] = '';
+        if ($user) {
+            $data['sender_name'] = $user->nickname;
+            $data['sender_avatar'] = $user->avatar;
+        }
+        $data['sent_at'] = time();
+        return $this->http_post($apiUrl, $data);
     }
 
     function http_post($url, $data, $debug = false) {
