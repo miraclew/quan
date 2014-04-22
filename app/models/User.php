@@ -5,6 +5,9 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
+	const GENDER_MALE = 1;
+	const GENDER_FEMALE = 2;
+
 	/**
 	 * The database table used by the model.
 	 *

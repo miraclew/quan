@@ -18,9 +18,10 @@ class CreatePostsTable extends Migration {
 		    $table->integer('circle_id');
 		    $table->integer('topic_id');
 		    $table->integer('user_id');
-		    $table->string('title');
 		    $table->string('text');
-		    $table->integer('images');
+		    $table->string('images')->nullable();
+			$table->integer('comments_count')->default(0);
+			$table->integer('likes_count')->default(0);
 
 		    $table->index('circle_id');
 		    $table->index('topic_id');

@@ -2,57 +2,72 @@
 class UserController extends BaseController {
 
     public function postLogin() {
-        $email = Input::get('email');
+        $username = Input::get('username');
         $password = Input::get('password');
 
-        if (Auth::attempt(array('email' => $email, 'password' => $password)))
+        if (Auth::attempt(array('username' => $username, 'password' => $password)))
         {
-            $user = Auth::user();
-            $ttl = 86400;
-            $token = Token::newTokenForUser($user->id, $ttl);
-
-            return Response::json(array(
-                'user'=> array('id'=>$user->id, 'email'=> $user->email),
-                'auth_token' => $token,
-                'auth_token_expires_at' => time()+$ttl));
+            return $this->loginResponse();
         } else {
-            return Response::json(array('error'=>array('code'=>-1, 'message'=>'登录失败, 用户名或密码错误')));
+            return JR::fail(Code::AUTH_FAIL);
         }
     }
 
     public function postLogout() {
         Auth::logout();
-        return Response::json(array('success'=>true));
+        return JR::ok();
     }
 
     public function postRegister() {
-        $email = Input::get('email');
+        $username = Input::get('username');
+        $nickname = Input::get('nickname');
         $password = Input::get('password');
         $password_digest = Hash::make($password);
 
-        $count = User::where('email', '=', $email)->count();
+        $count = User::where('username', '=', $username)->count();
         if ($count > 0) {
-            return Response::json(array('error_code'=>-1, 'error_msg'=>'user exists'));
+            return JR::fail(Code::RES_TAKEN);
         }
 
         $user = new User();
-        $user->email = $email;
+        $user->username = $username;
+        $user->nickname = $nickname;
         $user->password = $password_digest;
+        if (stripos($username, '@') !== false) {
+            $user->email = $username;
+        }
         $user->gender = 1;
         $user->is_locked = false;
+        $user->last_login = date('Y-m-d H:i:s');
         $user->save();
 
         // login
         Auth::logout();
         Auth::loginUsingId($user->id);
 
-        return Response::json(array('user'=> array('id'=>$user->id, 'email'=> $user->email)));
+        return $this->loginResponse();
+    }
+
+    private function loginResponse() {
+        $user = Auth::user();
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->save();
+
+        $ttl = 86400;
+        $token = Token::newTokenForUser($user->id, $ttl);
+
+        return JR::ok(array(
+            'user'=> array('id'=>$user->id,
+                'username'=> $user->username,
+                'email'=>$user->email),
+            'auth_token' => $token,
+            'auth_token_expires_at' => time()+$ttl));
     }
 
     public function getProfile()
     {
         $user = Auth::user();
-        return Response::json(array('object' => $user->toArray()));
+        return JR::ok(array('object' => $user->toArray()));
     }
 
     public function show($id) {
@@ -66,10 +81,26 @@ class UserController extends BaseController {
             if ($friend && $friend->status == Friend::STATUS_CONFIRM) {
                 $object['friend_id'] = $friend->id;
             }
-            return Response::json(array('object' => $object));
+
+            return JR::ok(array('object' => $object));
         }
 
-        return Response::json(array('object' => null));
+        return JR::ok(array('object' => null));
+    }
+
+    public function update($id) {
+        $me = Auth::user();
+        if ($id != $me->id) {
+            return JR::fail(Code::NOT_ALLOW);
+        }
+
+        $avatar = Input::get('avatar');
+        $gender = Input::get('gender');
+        $me->avatar = $avatar;
+        $me->gender = $gender;
+        $me->save();
+
+        return JR::ok();
     }
 
 }

@@ -16,7 +16,7 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
-Route::resource('users', 'UserController', array('only' => array('show')));
+Route::resource('users', 'UserController', array('only' => array('show','update')));
 Route::resource('circles', 'CircleController');
 Route::resource('friends', 'FriendController');
 Route::resource('follows', 'FollowController');

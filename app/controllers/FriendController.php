@@ -55,7 +55,7 @@ class FriendController extends BaseController {
         }
 
         if (Auth::user()->id != $friend->friend_id) {
-            return Response::json(array('error'=>array('message'=>'denied')));
+            return JR::fail(Code::NOT_ALLOW);
         }
 
         $friend->status = $status;
