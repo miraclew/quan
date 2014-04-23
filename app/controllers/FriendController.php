@@ -35,7 +35,7 @@ class FriendController extends BaseController {
     {
         $friend_id = Input::get('friend_id');
         if ($friend_id == Auth::user()->id) {
-            return Response::json(array('error'=>array('denied')));
+            return JR::fail(Code::NOT_ALLOW);
         }
 
         $friend = new Friend();
