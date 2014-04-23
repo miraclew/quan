@@ -13,6 +13,6 @@ class FileController extends BaseController {
 
         $url = 'http://' . $_SERVER['HTTP_HOST'] . '/upload/'.$fileName;
 
-        return Response::json(array('url'=>$url, 'size'=>$size));
+        return JR::ok(array('url'=>$url, 'size'=>$size));
     }
 }

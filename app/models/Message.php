@@ -19,7 +19,7 @@ class Message extends Eloquent {
 
     // 应答状态 0: 未应答 1: 应答1, 2: 应答2 ...
 
-    public function send() {
+    public function send($skipSender=false) {
         $apiUrl = Config::get('app.rtm_api_url');
         $data = $this->toArray();
         $user = User::find($this->sender_id);
@@ -31,6 +31,7 @@ class Message extends Eloquent {
             $data['sender_avatar'] = $user->avatar;
         }
         $data['sent_at'] = time();
+        $data['skip_sender'] = $skipSender;
         return $this->http_post($apiUrl, $data);
     }
 

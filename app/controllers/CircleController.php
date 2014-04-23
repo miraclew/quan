@@ -6,7 +6,7 @@ class CircleController extends BaseController {
         $skip = intval(Input::get('skip', 0));
         $circles = DB::table('circles')->skip($skip)->take($limit)->get();
 
-        return Response::json(array('objects' => $circles));
+        return JR::ok(array('objects' => $circles));
     }
 
     public function store()
@@ -20,7 +20,7 @@ class CircleController extends BaseController {
         );
         if ($validator->fails())
         {
-            return Response::json(array('error'=>array('code'=>-1,'message'=>'params invalid')));
+            return JR::fail(Code::PARAMS_INVALID);
         }
 
         $name = Input::get('name');
@@ -37,6 +37,6 @@ class CircleController extends BaseController {
         $circle->members_count = 0;
         $circle->save();
 
-        return Response::json(array('object' => $circle->toArray()));
+        return JR::ok(array('object' => $circle->toArray()));
     }
 }

@@ -28,7 +28,7 @@ class FriendController extends BaseController {
                 );
         }
 
-        return Response::json(array('objects' => $objects));
+        return JR::ok(array('objects' => $objects));
     }
 
     public function store()
@@ -41,14 +41,14 @@ class FriendController extends BaseController {
         $friend = new Friend();
         $friend->add(Auth::user()->id, $friend_id);
 
-        return Response::json(array('object'=> $friend->toArray()));
+        return JR::ok(array('object'=> $friend->toArray()));
     }
 
     public function update($id) {
         $status = Input::get('status');
         $friend = Friend::find($id);
         if (!$friend) {
-            return Response::json(array('error'=>array('message'=>'data not found')));
+            return JR::fail(Code::DATA_NOT_FOUND);
         }
 
         if (Auth::user()->id != $friend->friend_id) {
@@ -67,15 +67,15 @@ class FriendController extends BaseController {
     public function destroy($id) {
         $friend = Friend::find($id);
         if (!$friend) {
-            return Response::json(array('error'=>array('message'=>'data not found')));
+            return JR::fail(Code::DATA_NOT_FOUND);
         }
 
         if (Auth::user()->id != $friend->friend_id && Auth::user()->id != $friend->user_id) {
-            return Response::json(array('error'=>array('message'=>'denied')));
+            return JR::fail(Code::NOT_ALLOW);
         }
 
         $friend->delete();
 
-        return Response::json(array('message'=>"OK"));
+        return JR::ok();
     }
 }

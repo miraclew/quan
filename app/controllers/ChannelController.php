@@ -9,11 +9,11 @@ class ChannelController extends BaseController {
 
         $uids = Channel::getMembers($creator_id, $members);
         if (count($uids) < 2) {
-            return Response::json(array('error'=>array('code'=>-1)));
+            return JR::fail(Code::PARAMS_INVALID);
         }
 
         $channel = Channel::findOrCreateBy($creator_id, $uids);
 
-        return Response::json(array('object'=>$channel->toArray()));
+        return JR::ok(array('object'=>$channel->toArray()));
     }
 }

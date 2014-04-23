@@ -9,7 +9,7 @@ class PostController extends BaseController {
             ->select('posts.*', 'users.nickname','users.avatar')
             ->orderBy('id', 'desc')
             ->skip($skip)->take($limit)->get();
-        return Response::json(array('objects' => $posts));
+        return JR::ok(array('objects' => $posts));
     }
 
     public function store()
@@ -23,7 +23,7 @@ class PostController extends BaseController {
         );
         if ($validator->fails())
         {
-            return Response::json(array('error'=>array('code'=>-1,'message'=>'params invalid')));
+            return JR::fail(Code::PARAMS_INVALID);
         }
 
         $circle_id = Input::get('circle_id');
@@ -40,6 +40,6 @@ class PostController extends BaseController {
         $post->images = $images;
         $post->save();
 
-        return Response::json(array('object' => $post->toArray()));
+        return JR::ok(array('object' => $post->toArray()));
     }
 }

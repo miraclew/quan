@@ -12,7 +12,7 @@ class ChannelMemberController extends BaseController {
         $key = Consts::CK_S_CHANNEL_MEMBERS.':'.$channel_id;
         $uids = $redis->smembers($key);
         if (!in_array($user_id, $uids)) {
-            return Response::json(array('error'=>array('code'=>-1,'message'=>'denied')));
+            return JR::fail(Code::NOT_ALLOW);
         }
 
         $udis_toadd = array_diff($add_uids, $uids);
@@ -22,7 +22,7 @@ class ChannelMemberController extends BaseController {
 
         // rehash channel ?
 
-        return Response::json(array('objects'=>$udis_toadd));
+        return JR::ok(array('objects'=>$udis_toadd));
     }
 
     public function destroy() {

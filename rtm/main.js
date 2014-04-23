@@ -37,8 +37,17 @@ app.post('/messages', function(req, res) {
 });
 
 function sendToUsers(users, message) {
+    var skip_sender = message.skip_sender;
+    console.log("skip_sender:");
+    console.log(skip_sender);
+    console.log("sender_id="+message.sender_id);
+
     for (var i = 0; i < users.length; i++) {
         var k = users[i];
+        if (k == message.sender_id) {
+            console.log("skip_sender: "+k);
+            continue;
+        };
         console.log('send to: '+k);
         var connection = connections[k];
         if (connection != null) {
