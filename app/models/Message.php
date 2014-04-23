@@ -2,9 +2,14 @@
 
 class Message extends Eloquent {
     // 消息场景 chat message, user action, system action
-    const TYPE_CHAT             = 1;
-    const TYPE_USER_ACTION      = 2;
-    const TYPE_SYSTEM_ACTION    = 3;
+    const TYPE_CHAT             = 1; // 用户聊天
+    const TYPE_REQUEST          = 2; // 用户请求消息
+    const TYPE_ACK              = 3; // 用户回应消息
+    const TYPE_USER_ACTION      = 4; // 用户动作
+
+    const TYPE_SYSTEM_ACTION    = 10;
+
+    const ST_R_ADD_FIREND       = 2001;
 
     const MIME_TYPE_JSON             = 'application/json';
     const MIME_TYPE_TEXT             = 'text/plain';

@@ -59,6 +59,8 @@ class UserController extends BaseController {
         return JR::ok(array(
             'user'=> array('id'=>$user->id,
                 'username'=> $user->username,
+                'nickname' => $user->nickname,
+                'avatar' => $user->avatar,
                 'email'=>$user->email),
             'auth_token' => $token,
             'auth_token_expires_at' => time()+$ttl));

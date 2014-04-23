@@ -29,8 +29,41 @@ class MessageController extends BaseController {
         $result = $message->send();
 
         return JR::ok($result);
-        //return JR::ok(array('object'=>$message->toArray()));
     }
 
+    public function update($id) {
+        $ack = Input::get('ack');
+        $message = Message::find($id);
+        if (!$message) {
+            return JR::fail(Code::DATA_NOT_FOUND);
+        }
+
+        if ($ack <= 0) {
+            return JR::fail(Code::PARAMS_INVALID);
+        }
+
+        if ($message->channel_id >= 0) {
+            return JR::fail(Code::FAIL, 'not request message');
+        }
+
+        // if ($message->ack == $ack) {
+        //     return JR::fail(Code::FAIL, 'ack not changed');
+        // }
+
+        if ($message->type != Message::TYPE_REQUEST) {
+            return JR::fail(Code::FAIL, 'message type incorrect');
+        }
+
+        $message->ack = $ack;
+        $message->save();
+
+        if ($message->sub_type == Message::ST_R_ADD_FIREND) {
+            $friend = Friend::find($message->object_id);
+            $friend->confirm();
+            return JR::ok();
+        } else {
+            return JR::fail(Code::FAIL, 'message type can not handle');
+        }
+    }
 
 }

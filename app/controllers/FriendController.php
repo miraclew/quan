@@ -39,10 +39,7 @@ class FriendController extends BaseController {
         }
 
         $friend = new Friend();
-        $friend->user_id = Auth::user()->id;
-        $friend->friend_id = $friend_id;
-        $friend->status = Friend::STATUS_CREATE;
-        $friend->save();
+        $friend->add(Auth::user()->id, $friend_id);
 
         return Response::json(array('object'=> $friend->toArray()));
     }
@@ -58,10 +55,13 @@ class FriendController extends BaseController {
             return JR::fail(Code::NOT_ALLOW);
         }
 
-        $friend->status = $status;
-        $friend->save();
+        if ($status == Friend::STATUS_CONFIRM) {
+            $friend->confirm();
 
-        return Response::json(array('object'=>$friend->toArray()));
+            return JR::ok(array('object'=>$friend->toArray()));
+        }
+
+        return JR::fail(Code::PARAMS_INVALID);
     }
 
     public function destroy($id) {

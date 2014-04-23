@@ -2,7 +2,12 @@
 
 class Channel extends Eloquent {
 
+    const ID_CONFIRMATION   = -1;
+    const ID_SYS_RECOMMEND  = -2;
+    const ID_AD_1           = -11;
+
     public static function findOrCreateBy($creator_id, $uids) {
+        sort($uids);
         $hash = md5(implode(',', $uids));
 
         $channel = Channel::where('hash', $hash)->first();
