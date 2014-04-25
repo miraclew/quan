@@ -72,6 +72,25 @@ class UserController extends BaseController {
         return JR::ok(array('object' => $user->toArray()));
     }
 
+    public function index() {
+        $ids = Input::get('ids');
+        $keywords = Input::get('keywords');
+
+        $fields = Input::get('fields');
+        $fields[] = 'id';
+        $fields = array_unique($fields);
+        $allow_fields = array('id', 'nickname','avatar','gender');
+        $fields = array_intersect($fields, $allow_fields);
+
+        if ($ids) {
+            $users = DB::table('users')->select($fields)->whereIn('id', $ids)->get();
+        } else if ($keywords) {
+            $users = DB::table('users')->select($fields)->whereRaw("nickname like ?", ["%$keywords%"])->get();
+        }
+
+        return JR::ok(array('objects' => $users));
+    }
+
     public function show($id) {
         $me = Auth::user();
         $user = User::find($id);

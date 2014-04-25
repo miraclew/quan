@@ -38,8 +38,7 @@ class FriendController extends BaseController {
             return JR::fail(Code::NOT_ALLOW);
         }
 
-        $friend = new Friend();
-        $friend->add(Auth::user()->id, $friend_id);
+        $friend = Friend::add(Auth::user()->id, $friend_id);
 
         return JR::ok(array('object'=> $friend->toArray()));
     }

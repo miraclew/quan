@@ -21,7 +21,7 @@ class CreateMessagesTable extends Migration {
 		    $table->integer('sub_type');
 		    $table->string('mime_type');
 		    $table->text('content');
-		    $table->string('object_id')->nullable(); // 关联对象ID
+		    $table->string('ass_object_id')->nullable(); // 关联对象ID
 		    $table->smallInteger('ack'); // 应答状态 0: 未应答 1: 应答1, 2: 应答2 ...
 		    $table->smallInteger('status');
 

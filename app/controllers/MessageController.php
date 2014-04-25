@@ -28,7 +28,7 @@ class MessageController extends BaseController {
         // send to rtm
         $result = $message->send();
 
-        return JR::ok($result);
+        return JR::ok(array('object'=>$message->toArray()));
     }
 
     public function update($id) {
@@ -50,15 +50,15 @@ class MessageController extends BaseController {
         //     return JR::fail(Code::FAIL, 'ack not changed');
         // }
 
-        if ($message->type != Message::TYPE_REQUEST) {
-            return JR::fail(Code::FAIL, 'message type incorrect');
-        }
+        // if ($message->type != Message::TYPE_USER_MSG) {
+        //     return JR::fail(Code::FAIL, 'message type incorrect');
+        // }
 
         $message->ack = $ack;
         $message->save();
 
-        if ($message->sub_type == Message::ST_R_ADD_FIREND) {
-            $friend = Friend::find($message->object_id);
+        if ($message->sub_type == Message::ST_UM_ADD_FIREND) {
+            $friend = Friend::find($message->ass_object_id);
             $friend->confirm();
             return JR::ok();
         } else {

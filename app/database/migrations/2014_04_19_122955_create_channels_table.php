@@ -16,8 +16,10 @@ class CreateChannelsTable extends Migration {
 		{
 		    $table->increments('id');
 		    $table->integer('type');
+		    $table->string('title')->nullable();
 		    $table->integer('creator_id');
 		    $table->string('hash');
+		    $table->integer('members_count');
 
 		    $table->index('hash');
 

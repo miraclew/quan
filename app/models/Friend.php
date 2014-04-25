@@ -11,8 +11,8 @@ class Friend extends Eloquent {
         $m1 = new Message();
         $m1->sender_id = $this->user_id;
         $m1->channel_id = $channel->id;
-        $m1->type = 1;
-        $m1->sub_type = 1;
+        $m1->type = Message::TYPE_USER_MSG;
+        $m1->sub_type = Message::ST_UM_CHAT;
         $m1->mime_type = 'text/plain';
         $m1->content = '你通过了我的好友验证，我们可以开始对话了';
         $m1->status = 0;
@@ -23,8 +23,8 @@ class Friend extends Eloquent {
         $m2 = new Message();
         $m2->sender_id = $this->friend_id;
         $m2->channel_id = $channel->id;
-        $m2->type = 1;
-        $m2->sub_type = 1;
+        $m2->type = Message::TYPE_USER_MSG;
+        $m2->sub_type = Message::ST_UM_CHAT;
         $m2->mime_type = 'text/plain';
         $m2->content = '我通过了你的好友验证，我们可以开始对话了';
         $m2->status = 0;
@@ -36,25 +36,33 @@ class Friend extends Eloquent {
         $this->save();
     }
 
-    public function add($user_id, $friend_id) {
-        $this->user_id = $user_id;
-        $this->friend_id = $friend_id;
-        $this->status = Friend::STATUS_CREATE;
+    public static function add($user_id, $friend_id) {
+        $friend = Friend::whereRaw('(user_id=? and friend_id=?) or (user_id=? and friend_id=?)',
+            [$user_id, $friend_id, $friend_id, $user_id])->first();
+        if (!$friend) {
+            $friend = new Friend();
+            $friend->user_id = $user_id;
+            $friend->friend_id = $friend_id;
+            $friend->status = Friend::STATUS_CREATE;
+            $friend->save();
+        }
 
-        $this->save();
+        $user = User::find($user_id);
 
         $m1 = new Message();
-        $m1->sender_id = $this->user_id;
+        $m1->sender_id = $user_id;
         $m1->channel_id = Channel::ID_CONFIRMATION;
-        $m1->recipients = strval($this->friend_id);
-        $m1->type = Message::TYPE_REQUEST;
-        $m1->sub_type = Message::ST_R_ADD_FIREND;
+        $m1->recipients = strval($friend_id);
+        $m1->type = Message::TYPE_USER_MSG;
+        $m1->sub_type = Message::ST_UM_ADD_FIREND;
         $m1->mime_type = 'text/plain';
-        $m1->content = '请求加为好友';
+        $m1->content = $user->nickname .': 请求加为好友';
         $m1->status = 0;
-        $m1->object_id = $this->id;
+        $m1->ass_object_id = $friend->id;
         $m1->ack = 0;
         $m1->save();
         $m1->send();
+
+        return $friend;
     }
 }

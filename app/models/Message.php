@@ -1,15 +1,15 @@
 <?php
 
 class Message extends Eloquent {
-    // 消息场景 chat message, user action, system action
-    const TYPE_CHAT             = 1; // 用户聊天
-    const TYPE_REQUEST          = 2; // 用户请求消息
-    const TYPE_ACK              = 3; // 用户回应消息
-    const TYPE_USER_ACTION      = 4; // 用户动作
+    const TYPE_USER_MSG         = 1;
+    const TYPE_CHANNEL_EVENT    = 2;
+    const TYPE_SYSTEM_EVENT     = 3;
 
-    const TYPE_SYSTEM_ACTION    = 10;
-
-    const ST_R_ADD_FIREND       = 2001;
+    const ST_UM_CHAT            = 1001;
+    const ST_UM_ADD_FIREND      = 1002;
+    const ST_CE_CREATED         = 5001;
+    const ST_CE_ADD_MEMBER      = 5002;
+    const ST_CE_REMOVE_MEMBER   = 5003;
 
     const MIME_TYPE_JSON             = 'application/json';
     const MIME_TYPE_TEXT             = 'text/plain';
@@ -22,8 +22,8 @@ class Message extends Eloquent {
     public function send($skipSender=false) {
         $apiUrl = Config::get('app.rtm_api_url');
         $data = $this->toArray();
-        $user = User::find($this->sender_id);
         unset($data['updated_at']);
+        $user = User::find($this->sender_id);
         $data['sender_name'] = '';
         $data['sender_avatar'] = '';
         if ($user) {

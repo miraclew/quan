@@ -38,9 +38,9 @@ app.post('/messages', function(req, res) {
 
 function sendToUsers(users, message) {
     var skip_sender = message.skip_sender;
-    console.log("skip_sender:");
-    console.log(skip_sender);
-    console.log("sender_id="+message.sender_id);
+    // console.log("skip_sender:");
+    // console.log(skip_sender);
+    // console.log("sender_id="+message.sender_id);
 
     for (var i = 0; i < users.length; i++) {
         var k = users[i];
@@ -70,7 +70,6 @@ function originIsAllowed(origin) {
 }
 
 wsServer.on('request', function(request) {
-    console.log('request....');
     if (!originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
       request.reject();
@@ -79,10 +78,12 @@ wsServer.on('request', function(request) {
     }
 
     var token = request.resourceURL.query.token;
-    console.log('token:'+token);
+    console.log('request with token:'+token);
 
     rc.get("token:"+token, function(err, reply) {
-        console.log(err);
+        if (err != null) {
+            console.log(err);
+        };
         if (reply == null) {
             request.reject();
             console.log((new Date()) + ' Connection with token ' + token + ' rejected.');
@@ -92,7 +93,7 @@ wsServer.on('request', function(request) {
             var userId = reply;
             connection.userId = userId;
             connections[userId] = connection;
-            console.log(connection.remoteAddress + " connected - Protocol Version " + connection.webSocketVersion);
+            console.log("User:" +userId+" connected - IP: " + connection.remoteAddress);
             connection.on('message', function(message) {
                 if (message.type === 'utf8') {
                     console.log('Received Message: ' + message.utf8Data);
@@ -100,7 +101,7 @@ wsServer.on('request', function(request) {
                 }
             });
             connection.on('close', function(reasonCode, description) {
-                console.log(connection.remoteAddress + " disconnected");
+                console.log("User:" + userId + " " + connection.remoteAddress + " disconnected");
                 delete connections[userId];
             });
         };
