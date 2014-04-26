@@ -48,12 +48,47 @@ function sendToUsers(users, message) {
             console.log("skip_sender: "+k);
             continue;
         };
-        console.log('send to: '+k);
-        var connection = connections[k];
-        if (connection != null) {
-            connection.sendUTF(JSON.stringify(message));
-        };
+
+        pushToQueue(k, message)
     };
+}
+
+function pushToQueue(userId, message) {
+    rc.lpush('mq:'+userId,  JSON.stringify(message), function(err) {
+        if (err) {
+            console.log('lpush failed');
+            return;
+        }
+
+        processQueue(userId);
+    });
+}
+
+function processQueue(userId) {
+    var connection = connections[userId];
+    if (connection != null) {
+        rc.rpop('mq:'+userId, function(err, reply) {
+            if (err) {
+                console.log('rpop failed');
+                return;
+            }
+
+            if (reply !== null) {
+                var message = JSON.parse(reply);
+                console.log('send message:'+message.id+' to: '+userId);
+                connection.sendUTF(reply, function(err) {
+                    if (err) { // send failed, queue it up
+                        rc.rpush('mq:'+userId,  reply);
+                        console.log('sendUTF message('+message.id+') Error:' + err);
+                    } else {
+                        process.nextTick(function(){
+                            processQueue(userId);
+                        });
+                    }
+                });
+            }
+        });
+    }
 }
 
 var httpServer = app.listen(8080);
@@ -104,6 +139,8 @@ wsServer.on('request', function(request) {
                 console.log("User:" + userId + " " + connection.remoteAddress + " disconnected");
                 delete connections[userId];
             });
+
+            processQueue(userId);
         };
     });
 });
