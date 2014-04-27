@@ -12,7 +12,7 @@ class Friend extends Eloquent {
         $m1->sender_id = $this->user_id;
         $m1->channel_id = $channel->id;
         $m1->type = Message::TYPE_USER_MSG;
-        $m1->sub_type = Message::ST_UM_CHAT;
+        $m1->sub_type = Message::ST_UM_FIREND_CONFIRM;
         $m1->mime_type = 'text/plain';
         $m1->content = '你通过了我的好友验证，我们可以开始对话了';
         $m1->status = 0;
@@ -24,7 +24,7 @@ class Friend extends Eloquent {
         $m2->sender_id = $this->friend_id;
         $m2->channel_id = $channel->id;
         $m2->type = Message::TYPE_USER_MSG;
-        $m2->sub_type = Message::ST_UM_CHAT;
+        $m2->sub_type = Message::ST_UM_FIREND_CONFIRM;
         $m2->mime_type = 'text/plain';
         $m2->content = '我通过了你的好友验证，我们可以开始对话了';
         $m2->status = 0;
@@ -54,7 +54,7 @@ class Friend extends Eloquent {
         $m1->channel_id = Channel::ID_CONFIRMATION;
         $m1->recipients = strval($friend_id);
         $m1->type = Message::TYPE_USER_MSG;
-        $m1->sub_type = Message::ST_UM_ADD_FIREND;
+        $m1->sub_type = Message::ST_UM_FIREND_ADD;
         $m1->mime_type = 'text/plain';
         $m1->content = $user->nickname .': 请求加为好友';
         $m1->status = 0;

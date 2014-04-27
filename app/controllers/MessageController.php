@@ -57,7 +57,7 @@ class MessageController extends BaseController {
         $message->ack = $ack;
         $message->save();
 
-        if ($message->sub_type == Message::ST_UM_ADD_FIREND) {
+        if ($message->sub_type == Message::ST_UM_FIREND_ADD) {
             $friend = Friend::find($message->ass_object_id);
             $friend->confirm();
             return JR::ok();

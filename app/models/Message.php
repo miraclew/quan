@@ -6,7 +6,8 @@ class Message extends Eloquent {
     const TYPE_SYSTEM_EVENT     = 3;
 
     const ST_UM_CHAT            = 1001;
-    const ST_UM_ADD_FIREND      = 1002;
+    const ST_UM_FIREND_ADD      = 1002;
+    const ST_UM_FIREND_CONFIRM  = 1003;
     const ST_CE_CREATED         = 5001;
     const ST_CE_ADD_MEMBER      = 5002;
     const ST_CE_REMOVE_MEMBER   = 5003;
