@@ -1,14 +1,23 @@
 <?php
 class PostController extends BaseController {
+    const POST_SCOPE_LATEST = 0;
+    const POST_SCOPE_HOTEST = 1;
+
     public function index()
     {
         $limit = intval(Input::get('limit', 20));
         $skip = intval(Input::get('skip', 0));
-        $posts = DB::table('posts')
+        $scope = intval(Input::get('scope'));
+        $query = DB::table('posts')
             ->leftJoin('users', 'posts.user_id','=','users.id')
             ->select('posts.*', 'users.nickname','users.avatar')
-            ->orderBy('id', 'desc')
-            ->skip($skip)->take($limit)->get();
+            ->skip($skip)->take($limit);
+        if ($scope == self::POST_SCOPE_HOTEST) {
+            $query->orderBy('likes_count', 'desc');
+        } else {
+            $query->orderBy('id', 'desc');
+        }
+        $posts = $query->get();
         return JR::ok(array('objects' => $posts));
     }
 

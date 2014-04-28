@@ -9,6 +9,7 @@ class Code {
     const NOT_ALLOW         = -4;
 
     const RES_TAKEN         = -5;
+    const DATA_DUPLICATE    = -6;
 
     const AUTH_FAIL         = -10;
 
@@ -19,6 +20,7 @@ class Code {
         -3 => 'DATA_NOT_FOUND',
         -4 => 'NOT_ALLOW',
         -5 => 'RES_TAKEN',
+        -6 => 'DATA_DUPLICATE',
         -10 => 'AUTH_FAIL'
         );
 
