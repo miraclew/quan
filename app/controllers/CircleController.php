@@ -22,7 +22,7 @@ class CircleController extends BaseController {
             $latitude = Input::get('latitude');
             $longitude = Input::get('longitude');
             $lbs = new LBS();
-            $circle_ids = $lbs->getCirclesAround($latitude, $longitude, $skip, $limit);
+            $circle_ids = $lbs->getCirclesAround($longitude, $latitude, $skip, $limit);
             foreach ($circle_ids as $v) {
                 $circle = Circle::find($v['circle_id']);
                 if (!$circle) {

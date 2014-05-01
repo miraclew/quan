@@ -99,7 +99,7 @@ class LBS {
 
         $data = array();
         foreach ($cursor as $value) {
-            $distance = self::calcDistance($lng, $lat, $value['loc']['coordinates'][1], $value['loc']['coordinates'][0]);
+            $distance = self::calcDistance($lng, $lat, $value['loc']['coordinates'][0], $value['loc']['coordinates'][1]);
             $value['distance'] = $distance;
             $value['distance_text'] = $this->formatDistance($distance);
 
