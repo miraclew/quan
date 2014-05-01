@@ -1,0 +1,1 @@
+rsync -avr --numeric-ids --filter='- config/*'  --filter='- storage' --filter='- .git/' --filter='- upload' --filter='- node_modules' --filter='- .DS_Store' /Users/aaaa/git/quan/ root@114.215.186.168:/opt/www/quan

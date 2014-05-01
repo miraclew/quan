@@ -1,0 +1,6 @@
+db.circles.ensureIndex( { "loc": "2dsphere" } )
+db.circles.getIndexes()
+
+db.circles.save({circle_id:1,loc:{type: 'Point', coordinates: [40,5]}})
+
+db.circles.find({loc: {$nearSphere: {$geometry: {type: 'Point', coordinates: [40,5]}} } })

@@ -11,19 +11,34 @@ class CircleController extends BaseController {
         $scope = intval(Input::get('scope'));
         $query = DB::table('circles')->skip($skip)->take($limit);
 
+        $circles = [];
         if ($scope == self::CIRCLE_SCOPE_MY) {
             $query->select(DB::raw('circles.*'));
             $query->join('members', function($join){
                 $join->on('members.circle_id','=','circles.id')->where('members.user_id','=', Auth::user()->id);
             });
+            $circles = $query->get();
         } else if ($scope == self::CIRCLE_SCOPE_NEAR) {
+            $latitude = Input::get('latitude');
+            $longitude = Input::get('longitude');
+            $lbs = new LBS();
+            $circle_ids = $lbs->getCirclesAround($latitude, $longitude, $skip, $limit);
+            foreach ($circle_ids as $v) {
+                $circle = Circle::find($v['circle_id']);
+                if (!$circle) {
+                    continue;
+                }
+                $cc = $circle->toArray();
+                $cc['distance'] = $v['distance'];
+                $cc['distance_text'] = $v['distance_text'];
 
+                $circles[] = $cc;
+            }
         } else if ($scope == self::CIRCLE_SCOPE_SEARCH) {
             $keywords = Input::get('keywords');
             $query->whereRaw('name like ?', ["%$keywords%"]);
+            $circles = $query->get();
         }
-
-        $circles = $query->get();
 
         return JR::ok(array('objects' => $circles));
     }
@@ -61,6 +76,11 @@ class CircleController extends BaseController {
         $circle->posts_count = 0;
         $circle->members_count = 0;
         $circle->save();
+
+        if ($latitude && $longitude) {
+            $lbs = new LBS();
+            $lbs->setCircleLocation($circle->id, $circle->lng, $circle->lat);
+        }
 
         return JR::ok(array('object' => $circle->toArray()));
     }

@@ -1,4 +1,5 @@
 <?php
+define('MONGO_DB', 'mongodb://localhost:27017');
 
 return array(
 
