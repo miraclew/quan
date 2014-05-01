@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration {
 		    $table->increments('id');
 		    $table->integer('sender_id');
 		    $table->integer('channel_id');
+		    $table->string('recipients');
 		    $table->integer('type'); // 消息场景 chat message, user action, system action
 		    $table->integer('sub_type');
 		    $table->string('mime_type');

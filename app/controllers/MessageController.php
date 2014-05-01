@@ -27,6 +27,9 @@ class MessageController extends BaseController {
 
         // send to rtm
         $result = $message->send();
+        if ($result['code'] != 0) {
+            return JR::fail(Code::FAIL, $result['message']);
+        }
 
         return JR::ok(array('object'=>$message->toArray()));
     }

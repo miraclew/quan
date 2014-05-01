@@ -13,9 +13,9 @@
 
 App::before(function($request)
 {
-    $should_auth = !in_array($request->segment(2), array('login', 'register'));
+    $should_auth = !in_array($request->segment(2), array('login', 'register','test'));
 	if (Auth::guest() && $should_auth) {
-		return JR::fail(Code::NOT_ALLOW);
+		return JR::fail(Code::AUTH_NEED);
 	}
 });
 

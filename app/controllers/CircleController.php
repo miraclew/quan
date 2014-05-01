@@ -44,6 +44,8 @@ class CircleController extends BaseController {
 
         $name = Input::get('name');
         $location = Input::get('location');
+        $latitude = Input::get('latitude');
+        $longitude = Input::get('longitude');
 
         $user_id = Auth::user()->id;
 
@@ -51,6 +53,10 @@ class CircleController extends BaseController {
         $circle->name = $name;
         $circle->location = $location;
         $circle->creator_id = $user_id;
+        if ($latitude && $longitude) {
+            $circle->lat = $latitude;
+            $circle->lng = $longitude;
+        }
         $circle->is_locked = false;
         $circle->posts_count = 0;
         $circle->members_count = 0;

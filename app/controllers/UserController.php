@@ -26,7 +26,7 @@ class UserController extends BaseController {
 
         $count = User::where('username', '=', $username)->count();
         if ($count > 0) {
-            return JR::fail(Code::RES_TAKEN);
+            return JR::fail(Code::RES_TAKEN, '该用户名已被使用');
         }
 
         $user = new User();
