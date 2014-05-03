@@ -35,7 +35,7 @@ class LikeController extends BaseController {
 
         $like->delete();
         if ($like->type == Like::TYPE_POST) {
-            DB::table('posts')->where('id','=',$object_id)->decrement('likes_count');
+            DB::table('posts')->where('id','=',$like->object_id)->decrement('likes_count');
         }
         return JR::ok();
     }
