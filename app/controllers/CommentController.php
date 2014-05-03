@@ -9,6 +9,7 @@ class CommentController extends BaseController {
             ->leftJoin('users', 'comments.user_id','=','users.id')
             ->select('comments.*', 'users.nickname','users.avatar')
             ->where('post_id','=',$post_id)
+            ->orderBy('id', 'desc')
             ->skip($skip)->take($limit);
 
         $comments = $query->get();
@@ -26,10 +27,10 @@ class CommentController extends BaseController {
             return JR::fail(Code::DATA_NOT_FOUND);
         }
 
-        $is_member = Member::is_member($post->circle_id, $user_id);
-        if (!$is_member) {
-            return JR::fail(Code::NOT_ALLOW);
-        }
+        // $is_member = Member::is_member($post->circle_id, $user_id);
+        // if (!$is_member) {
+        //     return JR::fail(Code::NOT_ALLOW);
+        // }
 
         $comment = new Comment();
         $comment->post_id = $post_id;
