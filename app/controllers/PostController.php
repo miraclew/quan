@@ -8,6 +8,8 @@ class PostController extends BaseController {
         $limit = intval(Input::get('limit', 20));
         $skip = intval(Input::get('skip', 0));
         $scope = intval(Input::get('scope'));
+        $user_id = Auth::user()->id;
+
         $query = DB::table('posts')
             ->leftJoin('users', 'posts.user_id','=','users.id')
             ->select('posts.*', 'users.nickname','users.avatar')
@@ -17,7 +19,16 @@ class PostController extends BaseController {
         } else {
             $query->orderBy('id', 'desc');
         }
-        $posts = $query->get();
+        $posts = [];
+
+        foreach ($query->get() as $v) {
+            $v->like_id = 0;
+            $like = Like::whereRaw('type=? and user_id=? and object_id=?', [Like::TYPE_POST, $user_id, $v->id])->first();
+            if ($like) {
+                $v->like_id = $like->id;
+            }
+            $posts[] = $v;
+        }
         return JR::ok(array('objects' => $posts));
     }
 
