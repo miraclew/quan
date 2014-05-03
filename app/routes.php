@@ -23,6 +23,7 @@ Route::resource('follows', 'FollowController');
 Route::resource('members', 'MemberController');
 Route::resource('posts', 'PostController');
 Route::resource('comments', 'CommentController');
+Route::resource('likes', 'LikeController');
 
 Route::resource('channels', 'ChannelController');
 Route::resource('messages', 'MessageController');

@@ -38,6 +38,9 @@ class CommentController extends BaseController {
         $comment->user_id = $user_id;
         $comment->save();
 
+        // update post count
+        DB::table('posts')->where('id','=',$post_id)->increment('comments_count');
+
         return JR::ok(['object'=>$comment->toArray()]);
     }
 }
