@@ -13,8 +13,8 @@ class Friend extends Eloquent {
         $m1->channel_id = $channel->id;
         $m1->type = Message::TYPE_USER_MSG;
         $m1->sub_type = Message::ST_UM_FIREND_CONFIRM;
-        $m1->mime_type = 'text/plain';
-        $m1->content = '你通过了我的好友验证，我们可以开始对话了';
+        $m1->mime_type = 'application/json';
+        $m1->content = json_encode(['friend_id'=> $this->id, 'text'=>'你通过了我的好友验证，我们可以开始对话了']);
         $m1->status = 0;
         $m1->ack = 0;
         $m1->save();
@@ -25,8 +25,8 @@ class Friend extends Eloquent {
         $m2->channel_id = $channel->id;
         $m2->type = Message::TYPE_USER_MSG;
         $m2->sub_type = Message::ST_UM_FIREND_CONFIRM;
-        $m2->mime_type = 'text/plain';
-        $m2->content = '我通过了你的好友验证，我们可以开始对话了';
+        $m2->mime_type = 'application/json';
+        $m2->content = json_encode(['friend_id'=> $this->id, 'text'=>'我通过了你的好友验证，我们可以开始对话了']);
         $m2->status = 0;
         $m2->ack = 0;
         $m2->save();
