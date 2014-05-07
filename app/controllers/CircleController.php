@@ -40,6 +40,14 @@ class CircleController extends BaseController {
             $circles = $query->get();
         }
 
+        foreach ($circles as &$value) {
+            if (is_object($value)) {
+                $value->members_count = strval(Member::whereRaw('circle_id=?',[$value->id])->count());
+            } else if (is_array($value)) {
+                $value['members_count'] = strval(Member::whereRaw('circle_id=?',[$value['id']])->count());
+            }
+        }
+
         return JR::ok(array('objects' => $circles));
     }
 

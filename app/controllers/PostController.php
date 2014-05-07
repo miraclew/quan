@@ -12,7 +12,8 @@ class PostController extends BaseController {
 
         $query = DB::table('posts')
             ->leftJoin('users', 'posts.user_id','=','users.id')
-            ->select('posts.*', 'users.nickname','users.avatar')
+            ->leftJoin('circles', 'posts.circle_id','=','circles.id')
+            ->select('posts.*', 'circles.name', 'users.nickname','users.avatar')
             ->skip($skip)->take($limit);
         if ($scope == self::POST_SCOPE_HOTEST) {
             $query->orderBy('likes_count', 'desc');
