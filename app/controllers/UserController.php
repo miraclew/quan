@@ -56,20 +56,19 @@ class UserController extends BaseController {
         $ttl = 86400;
         $token = Token::newTokenForUser($user->id, $ttl);
 
+        $circles = DB::table('circles')->select(DB::raw('circles.id, circles.name'))->join('members', function($join){
+                $join->on('members.circle_id','=','circles.id')->where('members.user_id','=', Auth::user()->id);
+            })->get();
+
         return JR::ok(array(
             'user'=> array('id'=>$user->id,
                 'username'=> $user->username,
                 'nickname' => $user->nickname,
                 'avatar' => $user->avatar,
                 'email'=>$user->email),
+            'circles' => $circles,
             'auth_token' => $token,
             'auth_token_expires_at' => time()+$ttl));
-    }
-
-    public function getProfile()
-    {
-        $user = Auth::user();
-        return JR::ok(array('object' => $user->toArray()));
     }
 
     public function index() {
@@ -102,6 +101,8 @@ class UserController extends BaseController {
             if ($friend && $friend->status == Friend::STATUS_CONFIRM) {
                 $object['friend_id'] = $friend->id;
             }
+
+            $object['channel_id'] = Channel::p2pChanel($me->id, $id)->id;
 
             return JR::ok(array('object' => $object));
         }

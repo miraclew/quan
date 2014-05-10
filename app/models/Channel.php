@@ -6,6 +6,10 @@ class Channel extends Eloquent {
     const ID_SYS_RECOMMEND  = -2;
     const ID_AD_1           = -11;
 
+    public static function p2pChanel($p1, $p2) {
+        return self::findOrCreateBy($p1, [$p1, $p2]);
+    }
+
     // uids should include creator_id
     public static function findOrCreateBy($creator_id, $uids) {
         sort($uids);
