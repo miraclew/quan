@@ -3,7 +3,7 @@ class FileController extends BaseController {
     public function postUpload()
     {
         $file = Input::file('file');
-        if (!$file) {
+        if ($file == null) {
             return JR::fail(Code::PARAMS_INVALID);
         }
 
@@ -11,7 +11,7 @@ class FileController extends BaseController {
         $size = $file->getSize();
 
         $randFileName = uniqid(true);
-        $fileName = $randFileName.'.'.$extension;
+        $fileName = $randFileName.'_orig.'.$extension;
         $filePath = __DIR__.'/../../public/upload/';
         $file->move($filePath, $fileName);
 
@@ -19,10 +19,10 @@ class FileController extends BaseController {
         $mimeType = $file->getClientMimeType();
         $type = explode('/', $mimeType);
         if ($type[0] == 'image') {
-            $dstFile = $randFileName.'_s.'.$extension;
-            $this->makePhotoThumb($filePath.$fileName, $filePath.$dstFile, 80, 80);
+            $dstFile = $randFileName.'.'.$extension;
+            $this->makePhotoThumb($filePath.$fileName, $filePath.$dstFile, 160, 160);
 
-            return JR::ok(array('url'=>$url.$fileName, 'size'=>$size,'url_s'=>$url.$dstFile));
+            return JR::ok(array('url_orig'=>$url.$fileName, 'size'=>$size,'url'=>$url.$dstFile));
         } else {
             return JR::ok(array('url'=>$url.$fileName, 'size'=>$size));
         }
