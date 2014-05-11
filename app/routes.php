@@ -28,6 +28,8 @@ Route::resource('likes', 'LikeController');
 Route::resource('channels', 'ChannelController');
 Route::resource('messages', 'MessageController');
 
+Route::resource('helps', 'HelpController');
+
 Route::controller('debug', 'DebugController');
 Route::controller('users', 'UserController');
 Route::controller('files', 'FileController');

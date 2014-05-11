@@ -48,6 +48,21 @@ class UserController extends BaseController {
         return $this->loginResponse();
     }
 
+    public function postFeedback( ) {
+        $user = Auth::user();
+        $text = Input::get('text');
+        if (!$text) {
+            return JR::fail(Code::PARAMS_INVALID);
+        }
+
+        $feedback = new Feedback();
+        $feedback->user_id = $user->id;
+        $feedback->text = $text;
+        $feedback->save();
+
+        return JR::ok();
+    }
+
     private function loginResponse() {
         $user = Auth::user();
         $user->last_login = date('Y-m-d H:i:s');
