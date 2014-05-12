@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var redis = require("redis"),
     rc = redis.createClient();
+var push = require('./push');
 
 rc.on("error", function (err) {
     console.log("Redis Error: " + err);
@@ -62,30 +63,51 @@ function pushToQueue(userId, message) {
 }
 
 function processQueue(userId) {
-    var connection = connections[userId];
-    if (connection != null) {
-        rc.rpop('mq:'+userId, function(err, reply) {
-            if (err) {
-                console.log('rpop failed');
-                return;
-            }
+    rc.rpop('mq:'+userId, function(err, reply) {
+        if (err) {
+            console.log('rpop failed');
+            return;
+        }
 
-            if (reply !== null) {
-                var message = JSON.parse(reply);
-                console.log('send message:'+message.id+' to: '+userId);
-                connection.sendUTF(reply, function(err) {
-                    if (err) { // send failed, queue it up
-                        rc.rpush('mq:'+userId,  reply);
-                        console.log('sendUTF message('+message.id+') Error:' + err);
+        if (reply === null) {
+            return;
+        };
+
+        var message = JSON.parse(reply);
+        var connection = connections[userId];
+        if (connection != null) {
+            console.log('send message:'+message.id+' to: '+userId);
+            connection.sendUTF(reply, function(err) {
+                if (err) { // send failed, queue it up
+                    rc.rpush('mq:'+userId,  reply);
+                    console.log('sendUTF message('+message.id+') Error:' + err);
+                } else {
+                    process.nextTick(function(){
+                        processQueue(userId);
+                    });
+                }
+            });
+        } else {
+            // check if the device is ios device
+            rc.rpush('mq:'+userId,  reply, function(err2, len){
+                if (err2 != null) {
+                    console.log(err2);
+                };
+                console.log(len);
+                rc.get("udt:"+userId, function(err, deviceToken) {
+                    if (err != null) {
+                        console.log(err);
+                    };
+                    if (deviceToken !== null) {
+                        console.log("apn push => user:"+userId+" len="+len + ' deviceToken:' +deviceToken);
+                        push.apnPushToUser(deviceToken, reply, len);
                     } else {
-                        process.nextTick(function(){
-                            processQueue(userId);
-                        });
+                        console.log("user:"+userId+" offline, and has no registered device");
                     }
                 });
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
 var httpServer = app.listen(8080);

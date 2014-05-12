@@ -10,6 +10,7 @@
         "express":"4.0",
         "body-parser":"1.0",
         "hiredis":"0.1",
-        "redis":"0.10"
+        "redis":"0.10",
+        "apn": "1.5"
     }
 }

@@ -48,7 +48,7 @@ class UserController extends BaseController {
         return $this->loginResponse();
     }
 
-    public function postFeedback( ) {
+    public function postFeedback() {
         $user = Auth::user();
         $text = Input::get('text');
         if (!$text) {
@@ -60,6 +60,18 @@ class UserController extends BaseController {
         $feedback->text = $text;
         $feedback->save();
 
+        return JR::ok();
+    }
+
+    public function postRegisterdevice() {
+        $user = Auth::user();
+        $deviceToken = Input::get('device_token');
+
+        $redis = LRedis::connection();
+        $key = Consts::CK_S_USER_DEVICE_TOKEN.':'.$user->id;
+        $redis->set($key, $deviceToken);
+        $key = Consts::CK_S_DEVICE_TOKEN_USER.':'.$deviceToken;
+        $redis->set($key, $user->id);
         return JR::ok();
     }
 
