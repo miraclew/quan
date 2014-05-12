@@ -26,7 +26,6 @@ apnConnection.on('disconnected', function() {
 apnConnection.on('socketError', console.error);
 
 var apnPushToUser = function(token, message, len) {
-    // var token = '956d486fba86e30727d58d05f85c43b650639bdcb74828841600259aa31917d7';
     var myDevice = new apn.Device(token);
     var note = new apn.Notification();
     note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.

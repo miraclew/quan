@@ -24,6 +24,19 @@ class UserController extends BaseController {
         $password = Input::get('password');
         $password_digest = Hash::make($password);
 
+        $validator = Validator::make(
+            Input::all(),
+            array(
+                'username' => 'required|min:6',
+                'nickname' => 'required|min:3',
+                'password' => 'required|min:6',
+            )
+        );
+        if ($validator->fails())
+        {
+            return JR::fail(Code::PARAMS_INVALID);
+        }
+
         $count = User::where('username', '=', $username)->count();
         if ($count > 0) {
             return JR::fail(Code::RES_TAKEN, '该用户名已被使用');
