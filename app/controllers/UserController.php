@@ -27,14 +27,14 @@ class UserController extends BaseController {
         $validator = Validator::make(
             Input::all(),
             array(
-                'username' => 'required|min:6',
+                'username' => 'required|min:4',
                 'nickname' => 'required|min:3',
                 'password' => 'required|min:6',
             )
         );
         if ($validator->fails())
         {
-            return JR::fail(Code::PARAMS_INVALID);
+            return JR::fail(Code::PARAMS_INVALID, '请正确填写用户信息: 昵称最少3个字符, 密码最少6位');
         }
 
         $count = User::where('username', '=', $username)->count();
@@ -73,6 +73,10 @@ class UserController extends BaseController {
         $feedback->text = $text;
         $feedback->save();
 
+        return JR::ok();
+    }
+
+    public function postPasswordreset() {
         return JR::ok();
     }
 
