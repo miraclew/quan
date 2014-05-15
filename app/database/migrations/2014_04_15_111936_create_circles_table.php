@@ -16,12 +16,17 @@ class CreateCirclesTable extends Migration {
 		{
 		    $table->increments('id');
 		    $table->string('name');
-		    $table->string('location');
+		    $table->string('address');
+   			$table->string('lat')->nullable();
+			$table->string('lng')->nullable();
+			$table->float('radius')->nullable();
+			$table->string('place_uid')->nullable()->unique();
+
+		    $table->integer('posts_count')->default(0);
+		    $table->integer('members_count')->default(0);
+
 		    $table->integer('creator_id');
 		    $table->boolean('is_locked');
-		    $table->integer('posts_count');
-		    $table->integer('members_count');
-
 		    $table->timestamps();
 		});
 	}

@@ -57,7 +57,7 @@ class CircleController extends BaseController {
             Input::all(),
             array(
                 'name' => 'required|min:2',
-                'location' => 'required|min:2',
+                'address' => 'required|min:2',
             )
         );
         if ($validator->fails())
@@ -65,47 +65,71 @@ class CircleController extends BaseController {
             return JR::fail(Code::PARAMS_INVALID);
         }
 
+        $user_id = Auth::user()->id;
         $name = Input::get('name');
-        $location = Input::get('location');
+        $address = Input::get('address');
         $latitude = Input::get('latitude');
         $longitude = Input::get('longitude');
+        $place_uid = Input::get('place_uid');
 
-        $user_id = Auth::user()->id;
-
-        $circle = new Circle();
-        $circle->name = $name;
-        $circle->location = $location;
-        $circle->creator_id = $user_id;
-        if ($latitude && $longitude) {
-            $circle->lat = $latitude;
-            $circle->lng = $longitude;
-        }
-        $circle->is_locked = false;
-        $circle->posts_count = 0;
-        $circle->members_count = 0;
-        $circle->save();
-
-        if ($latitude && $longitude) {
-            $lbs = new LBS();
-            $lbs->setCircleLocation($circle->id, $circle->lng, $circle->lat);
+        if ($place_uid) {
+            $circle = Circle::where('place_uid','=',$place_uid)->first();
         }
 
-        return JR::ok(array('object' => $circle->toArray()));
+        if ($circle) {
+            $object = $circle->toArray();
+            $object['member_id'] = $this->getMemberId($circle->id);
+        } else {
+            $circle = new Circle();
+            $circle->name = $name;
+            $circle->address = $address;
+            $circle->creator_id = $user_id;
+            if ($latitude && $longitude) {
+                $circle->lat = $latitude;
+                $circle->lng = $longitude;
+            }
+            if ($place_uid) {
+                $circle->place_uid = $place_uid;
+            }
+            $circle->is_locked = false;
+            $circle->posts_count = 0;
+            $circle->members_count = 0;
+            $circle->save();
+
+            if ($latitude && $longitude) {
+                $lbs = new LBS();
+                $lbs->setCircleLocation($circle->id, $circle->lng, $circle->lat);
+            }
+            $object = $circle->toArray();
+            $object['member_id'] = 0;
+        }
+
+        return JR::ok(array('object' => $object));
     }
 
     public function show($id) {
-        $circle = Circle::find($id);
+        if (stripos($id, 'place_uid') !== false) {
+            $place_uid = str_replace('place_uid', '', $id);
+            $circle = Circle::where('place_uid','=',$place_uid)->first();
+        }
+        else
+            $circle = Circle::find($id);
+
         if (!$circle) {
             return JR::fail(Code::DATA_NOT_FOUND);
         }
 
         $object = $circle->toArray();
-        $object['member_id'] = 0;
-        $member = Member::whereRaw('user_id=? and circle_id=?', [Auth::user()->id, $id])->first();
-        if ($member) {
-            $object['member_id'] = $member->id;
-        }
+        $object['member_id'] = $this->getMemberId($circle->id);
 
         return JR::ok(['object'=>$object]);
+    }
+
+    private function getMemberId($circle_id) {
+        $member = Member::whereRaw('user_id=? and circle_id=?', [Auth::user()->id, $circle_id])->first();
+        if ($member) {
+            return $member->id;
+        }
+        return 0;
     }
 }

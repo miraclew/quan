@@ -28,7 +28,7 @@ class MemberController extends BaseController {
         $member->user_id = $user_id;
         $member->save();
 
-        JR::ok(['object'=>$member->toArray()]);
+        return JR::ok(['object'=>$member->toArray()]);
     }
 
     public function destroy($id) {
