@@ -13,6 +13,11 @@ class CommentController extends BaseController {
             ->skip($skip)->take($limit);
 
         $comments = $query->get();
+        $floor = count($comments);
+        foreach ($comments as &$value) {
+            $value->floor = $floor;
+            $floor--;
+        }
 
         return JR::ok(['objects' => $comments]);
     }
