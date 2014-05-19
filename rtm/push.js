@@ -1,6 +1,6 @@
 var apn = require('apn');
 
-var options = { passphrase:'miraclew' };
+var options = { passphrase:'miraclew', production:false,cert:'cert_dev.pem',key:'key_dev.pem' };
 var apnConnection = new apn.Connection(options);
 
 apnConnection.on('connected', function() {

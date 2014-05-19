@@ -149,9 +149,13 @@ wsServer.on('request', function(request) {
             connections[userId] = connection;
             console.log("User:" +userId+" connected - IP: " + connection.remoteAddress);
             connection.on('message', function(message) {
+                console.log('Received Message: ' + message.utf8Data);
                 if (message.type === 'utf8') {
-                    console.log('Received Message: ' + message.utf8Data);
-                    connection.sendUTF(message.utf8Data);
+                    if (message.utf8Data == 'ping') {
+                        processQueue(userId);
+                        connection.sendUTF('pong');
+                    } else {
+                    }
                 }
             });
             connection.on('close', function(reasonCode, description) {

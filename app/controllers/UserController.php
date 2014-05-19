@@ -28,7 +28,7 @@ class UserController extends BaseController {
             Input::all(),
             array(
                 'username' => 'required|min:4',
-                'nickname' => 'required|min:3',
+                'nickname' => 'required|min:2',
                 'password' => 'required|min:6',
             )
         );
