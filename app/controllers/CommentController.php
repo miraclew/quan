@@ -37,6 +37,9 @@ class CommentController extends BaseController {
         //     return JR::fail(Code::NOT_ALLOW);
         // }
 
+        if (strlen($text) <= 0) {
+            return JR::fail(Code::PARAMS_INVALID, "请输入评论");
+        }
         $comment = new Comment();
         $comment->post_id = $post_id;
         $comment->text = $text;

@@ -9,7 +9,9 @@ class UserController extends BaseController {
         {
             return $this->loginResponse();
         } else {
-            return JR::fail(Code::AUTH_FAIL);
+
+            $msg = print_r($_REQUEST, true);
+            return JR::fail(Code::AUTH_FAIL,"$username, $password, $msg");
         }
     }
 

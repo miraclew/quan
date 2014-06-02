@@ -22,7 +22,7 @@ class FriendController extends BaseController {
             $user = User::find($friend_id);
             $objects[] = array(
                 'id' => $value->id,
-                'friend_id' => $friend_id,
+                'friend_id' => $friend_id,// user_id
                 'avatar' => $user->avatar,
                 'nickname' => $user->nickname
                 );
